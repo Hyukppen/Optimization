@@ -1,2 +1,2 @@
 # Optimization
- for Optimization class 한글 안되나
+ 최적화 강의 코드들
