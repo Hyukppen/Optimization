@@ -1,2 +1,2 @@
 # Optimization
- for Optimization class
+ for Optimization class 한글 안되나
