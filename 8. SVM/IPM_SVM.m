@@ -120,7 +120,7 @@ close all
 % end
 % 
 % g(1:N)
-% alpha=mu(1:N)
+% alph=mu(1:N)
 % beta=mu(N+1:end)
 %% SVM_kernel trick - Dual problem using Primal-Dual IPM
 Nh=20;
@@ -129,50 +129,73 @@ x=[randn(Nh/2,1) ; randn(Nh/2,1)+5 ; 3 ; 2];
 y=[randn(Nh/2,1)+5 ; randn(Nh/2,1) ; 2 ; 2];
 s=[1*ones(Nh/2,1) ; -1*ones(Nh/2,1); 1 ; -1];
 N=Nh+Ns;
+xmin= -2; xmax= 8; ymin= -2; ymax = 8;
+
+Nh1=20;
+Nh2=5;
+radius1=2+0.2*randn(Nh1,1);
+radius2=0.3+0.1*randn(Nh2,1);
+theta1=2*pi*rand(Nh1,1)-pi;
+theta2=2*pi*rand(Nh2,1)-pi;
+x=[radius1.*cos(theta1) ; radius2.*cos(theta2) ];
+y=[radius1.*sin(theta1) ; radius2.*sin(theta2) ];
+s=[1*ones(Nh1,1) ; -1*ones(Nh2,1)];
+N=Nh1+Nh2;
+xmin= -2.5; xmax= 2.5; ymin= -2.5; ymax = 2.5;
+
+% Nh=10;
+% x=[linspace(-2,2,Nh/2).' ; linspace(-2,2,Nh/2).' ];
+% y=[(4+linspace(-2,2,Nh/2).^2).' ; (linspace(-2,2,Nh/2).^2).' ];
+% s=[-1*ones(Nh/2,1) ; 1*ones(Nh/2,1)];
+% N=Nh;
+% xmin= -3; xmax= 3; ymin= -0.5; ymax = 8.5;
 
 alpha_ini=1*ones(N,1);
 beta_ini=1*ones(N,1);
-mu_ini=1*ones(2*N,1);
-lam_ini=1*ones(N+1,1);
+mu_ini=10*ones(2*N,1);
+lam_ini=0*ones(N+1,1);
 wk=[alpha_ini ; beta_ini ; mu_ini ; lam_ini];
 
-gamma=1;
-sig=1;
-step_size=1;
+gamma=2; % 0.1; % 1; %
+sig=1; % 0.5; % 
 tl=1;
+which_kernel= 'RBF'; % 'Linear'; % 'poly'; %'sigmoid'; %
 
 figure
 plot(x(s==1),y(s==1),'bo','markersize',15,'linewidth',2)
 hold on; grid on
 plot(x(s==-1),y(s==-1),'ro','markersize',15,'linewidth',2)
-axis([-2 6 -2 8])
-x_plot=-2:0.01:6;
+axis([xmin xmax ymin ymax])
+x_plot=xmin:0.2:xmax;
+y_plot=ymin:0.2:ymax;
+[X_plot, Y_plot]=meshgrid(x_plot,y_plot);
+pause
 
 for k=1:50
     tl1=0.8*tl;
     t=tl1;
     
-    alpha=wk(1:N);
+    alph=wk(1:N);
     beta=wk(N+1:2*N);
     mu=wk(2*N+1:4*N);
     lam=wk(4*N+1:end);
 
-    g=[-alpha ; -beta];
-    h=[sum(alpha.*s) ; alpha+beta-gamma];
+    g=[-alph ; -beta];
+    h=[sum(alph.*s) ; alph+beta-gamma];
     dgdx = -eye(2*N);
     dhdx = [s.' zeros(1,N) ; eye(N) eye(N)];
     
     df=zeros(N,1);
     for j=1:N
         for i=1:N
-            df(j)= df(j)+alpha(i)*s(i)*s(j)* kernel([x(i);y(i)],[x(j);y(j)],'Linear',sig);
+            df(j)= df(j)+alph(i)*s(i)*s(j)* kernel([x(i);y(i)],[x(j);y(j)],which_kernel,sig);
         end
         df(j)= df(j)-1;
     end
     d2f=zeros(N,N);
     for row=1:N
         for col=1:N
-            d2f(row,col) = s(row)*s(col)* kernel([x(row);y(row)],[x(col);y(col)],'Linear',sig);
+            d2f(row,col) = s(row)*s(col)* kernel([x(row);y(row)],[x(col);y(col)],which_kernel,sig);
         end
     end
     R=[ [df ; zeros(N,1)] + dhdx.'*lam + dgdx.'*mu ; mu.*g + t*ones(2*N,1) ; h ];
@@ -188,53 +211,45 @@ for k=1:50
     B33 = zeros(N+1,N+1);
     dRdw=[ B11 B12 B13 ; B21 B22 B23 ; B31 B32 B33 ];
     
-    wk1=wk-step_size*inv(dRdw)*R; %%%%%%%%%%%%%%%%%%%%%% step_size for stable update
+    wk1=wk-inv(dRdw)*R;
     wk=wk1;
     tl=tl1;
     
-end
-
-
-[~, support_j]=max(abs(alpha));
-% support_i=1
-c=zeros(1);
-for i=1:N
-    c=c+ alpha(i)*s(i)* kernel([x(i);y(i)],[x(support_j);y(support_j)],'Linear',sig);
-end
-c=c-s(support_j);
-% c=0;
-
-
-y_plot=-100:0.1:100;
-boundary_eq=zeros(length(y_plot),1);
-for k=1:length(y_plot)
+    %%%% plot %%%%
+    [~, support_j]=min(abs(alph-gamma/2));
+    c=0;
     for i=1:N
-        boundary_eq(k)=boundary_eq(k)+ alpha(i)*s(i)* kernel([x(i);y(i)],[x_plot(1);y_plot(k)],'Linear',sig);
+        c=c+ alph(i)*s(i)* kernel([x(i);y(i)],[x(support_j);y(support_j)],which_kernel,sig);
     end
-    boundary_eq(k) = boundary_eq(k) -c;
+    c=c-s(support_j);
+    % c=0;
+
+    decision_val=zeros(length(y_plot),length(x_plot));
+    for xi=1:length(x_plot)
+        for yi=1:length(y_plot)
+            decision_val(yi,xi) = calc_decision_val(x_plot(xi),y_plot(yi),alph,s,x,y,sig,N,c,which_kernel);
+        end
+    end
+
+    % figure
+    hold off
+    surf(X_plot,Y_plot,decision_val); xlabel('x'); ylabel('y'); hold on; grid on; shading interp;  colormap cool; alpha(0.8); 
+    % contourf(X_plot,Y_plot,decision_val,[-1000 0]); 
+    lightangle(-35,10)
+    view(-35,10)
+    plot(x(s==1),y(s==1),'bo','markersize',15,'linewidth',2)
+    plot(x(s==-1),y(s==-1),'ro','markersize',15,'linewidth',2)
+    plot(x(abs(alph)>0.001),y(abs(alph)>0.001),'pg','markersize',10,'markerfacecolor','g')
+    axis([xmin xmax ymin ymax -1.5 1.5])
+    drawnow
 end
-figure
-plot(y_plot,boundary_eq)
-
-
-y_plot1=x_plot;
-y_plot2=x_plot;
-y_plot3=x_plot;
-for k=1:length(x_plot)
-    y_plot1(k)=fzero(@(y_temp) implicit_func1(y_temp,alpha,x,y,s,sig,x_plot,k,N,c,'Linear'), x_plot(k));
-    y_plot2(k)=fzero(@(y_temp) implicit_func2(y_temp,alpha,x,y,s,sig,x_plot,k,N,c,'Linear'), x_plot(k));
-    y_plot3(k)=fzero(@(y_temp) implicit_func3(y_temp,alpha,x,y,s,sig,x_plot,k,N,c,'Linear'), x_plot(k));
-end
-figure
-hold off
-plot(x_plot,y_plot1,'k','linewidth',2); hold on; grid on
-plot(x_plot,y_plot2,'r','linewidth',2)
-plot(x_plot,y_plot3,'r','linewidth',2)
-plot(x(s==1),y(s==1),'bo','markersize',15,'linewidth',2)
-plot(x(s==-1),y(s==-1),'ro','markersize',15,'linewidth',2)
-plot(x(abs(alpha)>0.001),y(abs(alpha)>0.001),'pg','markersize',10,'markerfacecolor','g')
-axis([-2 6 -2 8])
-
+alph
+beta
+alph+beta
+g
+h
+mu
+lam
 %% IPM - min x^2 s.t. 1<=x<=3
 % close all
 % 
