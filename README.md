@@ -1,2 +1,2 @@
 # Optimization
- for Optimization class
+ 최적화 강의 코드들
