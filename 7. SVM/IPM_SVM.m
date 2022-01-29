@@ -1,63 +1,63 @@
 clear
 close all
 %% SVM - Primal-Dual IPM
-% N=20;
-% x=[randn(N/2,1) ; randn(N/2,1)+5];
-% y=[randn(N/2,1)+5 ; randn(N/2,1)];
-% s=[1*ones(N/2,1) ; -1*ones(N/2,1)];
-% 
-% % Nh=20;
-% % Ns=2;
-% % x=[randn(Nh/2,1) ; randn(Nh/2,1)+5 ; 3 ; 2];
-% % y=[randn(Nh/2,1)+5 ; randn(Nh/2,1) ; 2 ; 2];
-% % s=[1*ones(Nh/2,1) ; -1*ones(Nh/2,1); 1 ; -1];
-% % N=Nh+Ns;
-% 
-% mu_ini=1*ones(N,1);
-% wk=[-1 ; 1 ; 0 ; mu_ini];
-% tl=1;
-% 
-% figure
-% plot(x(s==1),y(s==1),'bo','markersize',15,'linewidth',2)
-% hold on; grid on
-% plot(x(s==-1),y(s==-1),'ro','markersize',15,'linewidth',2)
-% axis([-2 6 -4 10])
-% x_plot=-2:0.01:6;
-% 
-% for k=1:50
-%     tl1=0.7*tl;
-%     t=tl1;
-%     
-%     a=wk(1);
-%     b=wk(2);
-%     c=wk(3);
-%     mu=wk(4:end);
-%     g=s.*(c - [a b] * [x.' ; y.']).'+1;
-%     dgdx = [-s.*x -s.*y s];
-%     
-%     R=[ [a ; b ; 0]+ dgdx.'*mu ; mu.*g + t*ones(N,1) ];
-%     B1 = [1 0 0 ; 0 1 0 ; 0 0 0];
-%     B2 = dgdx.';
-%     B3 = diag(mu)*dgdx;
-%     B4 = diag(g);
-%     dRdw=[ B1 B2 ; B3 B4 ];
-%     
-%     wk1=wk-inv(dRdw)*R;
-%     wk=wk1;
-%     tl=tl1;
-% 
-%     hold off
-%     plot(x(s==1),y(s==1),'bo','markersize',15,'linewidth',2)
-%     hold on; grid on
-%     plot(x(s==-1),y(s==-1),'ro','markersize',15,'linewidth',2)
-%     plot(x_plot,-a/b*x_plot+c/b,'k','linewidth',2)
-%     plot(x_plot,-a/b*x_plot+(c+1)/b,'r','linewidth',2)
-%     plot(x_plot,-a/b*x_plot+(c-1)/b,'r','linewidth',2)
-%     plot(x(abs(mu)>0.001),y(abs(mu)>0.001),'pg','markersize',10,'markerfacecolor','g')
-%     axis([-2 6 -4 10])
-%     pause(0.1)
-% end
-% g
+N=20;
+x=[randn(N/2,1) ; randn(N/2,1)+5];
+y=[randn(N/2,1)+5 ; randn(N/2,1)];
+s=[1*ones(N/2,1) ; -1*ones(N/2,1)];
+
+% Nh=20;
+% Ns=2;
+% x=[randn(Nh/2,1) ; randn(Nh/2,1)+5 ; 3 ; 2];
+% y=[randn(Nh/2,1)+5 ; randn(Nh/2,1) ; 2 ; 2];
+% s=[1*ones(Nh/2,1) ; -1*ones(Nh/2,1); 1 ; -1];
+% N=Nh+Ns;
+
+mu_ini=1*ones(N,1);
+wk=[-1 ; 1 ; 0 ; mu_ini];
+tl=1;
+
+figure
+plot(x(s==1),y(s==1),'bo','markersize',15,'linewidth',2)
+hold on; grid on
+plot(x(s==-1),y(s==-1),'ro','markersize',15,'linewidth',2)
+axis([-2 6 -4 10])
+x_plot=-2:0.01:6;
+
+for k=1:50
+    tl1=0.7*tl;
+    t=tl1;
+    
+    a=wk(1);
+    b=wk(2);
+    c=wk(3);
+    mu=wk(4:end);
+    g=s.*(c - [a b] * [x.' ; y.']).'+1;
+    dgdx = [-s.*x -s.*y s];
+    
+    R=[ [a ; b ; 0]+ dgdx.'*mu ; mu.*g + t*ones(N,1) ];
+    B1 = [1 0 0 ; 0 1 0 ; 0 0 0];
+    B2 = dgdx.';
+    B3 = diag(mu)*dgdx;
+    B4 = diag(g);
+    dRdw=[ B1 B2 ; B3 B4 ];
+    
+    wk1=wk-inv(dRdw)*R;
+    wk=wk1;
+    tl=tl1;
+
+    hold off
+    plot(x(s==1),y(s==1),'bo','markersize',15,'linewidth',2)
+    hold on; grid on
+    plot(x(s==-1),y(s==-1),'ro','markersize',15,'linewidth',2)
+    plot(x_plot,-a/b*x_plot+c/b,'k','linewidth',2)
+    plot(x_plot,-a/b*x_plot+(c+1)/b,'r','linewidth',2)
+    plot(x_plot,-a/b*x_plot+(c-1)/b,'r','linewidth',2)
+    plot(x(abs(mu)>0.001),y(abs(mu)>0.001),'pg','markersize',10,'markerfacecolor','g')
+    axis([-2 6 -4 10])
+    pause(0.1)
+end
+g
 
 %% Soft margin SVM - Primal-Dual IPM
 % Nh=20;
@@ -158,7 +158,7 @@ wk=[alpha_ini ; beta_ini ; mu_ini ; lam_ini];
 
 gamma=2; % 0.1; % 1; %
 sig=1; % 0.5; % 
-tl=1;
+tl=0.000000000000001;
 which_kernel= 'RBF'; % 'Linear'; % 'poly'; %'sigmoid'; %
 
 figure
@@ -233,15 +233,23 @@ for k=1:50
 
     % figure
     hold off
-    surf(X_plot,Y_plot,decision_val); xlabel('x'); ylabel('y'); hold on; grid on; shading interp;  colormap cool; alpha(0.8); 
-    % contourf(X_plot,Y_plot,decision_val,[-1000 0]); 
+    surf(X_plot,Y_plot,decision_val); hold on; xlabel('x'); ylabel('y'); grid on; shading interp;  colormap cool; alpha(0.8); 
     lightangle(-35,10)
     view(-35,10)
     plot(x(s==1),y(s==1),'bo','markersize',15,'linewidth',2)
     plot(x(s==-1),y(s==-1),'ro','markersize',15,'linewidth',2)
     plot(x(abs(alph)>0.001),y(abs(alph)>0.001),'pg','markersize',10,'markerfacecolor','g')
     axis([xmin xmax ymin ymax -1.5 1.5])
-    drawnow
+    
+    [~,h] = contour(X_plot,Y_plot,decision_val,[-10000 0],'Fill','on'); 
+    pause(eps)
+    hFills = h.FacePrims;
+    [hFills.ColorType] = deal('truecoloralpha');            
+    AlphaGradient=[80 80]; %The actual values that I want to use for the alpha values
+    for idx = 1:length(hFills)
+        hFills(idx).ColorData(4) = AlphaGradient(idx);
+    end    
+    pause(0.01)
 end
 alph
 beta
@@ -250,6 +258,7 @@ g
 h
 mu
 lam
+
 %% IPM - min x^2 s.t. 1<=x<=3
 % close all
 % 
