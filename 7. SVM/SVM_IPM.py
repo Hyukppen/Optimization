@@ -23,7 +23,7 @@ mu_ini=1*np.ones((N,1))
 wk=np.vstack((-1,1,0,mu_ini))
 tl=1;
 
-figure = plt.figure(figsize=[5.5, 4.5])
+figure = plt.figure(figsize=[8.5, 7.5])
 
 plt.grid()
 plt.plot(x[s==-1],y[s==-1],'ro',fillstyle="none",markersize=15,markeredgewidth=2)
@@ -95,7 +95,7 @@ gamma=0.1
 # gamma=10
 tl=1
 
-figure = plt.figure(figsize=[5.5, 4.5])
+figure = plt.figure(figsize=[8.5, 7.5])
 plt.plot(x[s==1],y[s==1],'bo',fillstyle="none",markersize=15,markeredgewidth=2)
 plt.grid()
 plt.plot(x[s==-1],y[s==-1],'ro',fillstyle="none",markersize=15,markeredgewidth=2)
@@ -211,7 +211,7 @@ sig=1 # 0.5; #
 tl=1
 which_kernel= 'RBF' # 'Linear' # 'poly' # 'sigmoid' #
 
-figure = plt.figure(figsize=[5.5, 4.5])
+figure = plt.figure(figsize=[8.5, 7.5])
 plt.plot(x[s==1],y[s==1],'bo',fillstyle="none",markersize=15,markeredgewidth=2)
 plt.grid()
 plt.plot(x[s==-1],y[s==-1],'ro',fillstyle="none",markersize=15,markeredgewidth=2)
@@ -222,7 +222,7 @@ X_plot, Y_plot=np.meshgrid(x_plot,y_plot)
 for k in range(3):
     figure.canvas.draw(); figure.canvas.flush_events(); time.sleep(1)
 plt.close()
-figure = plt.figure(figsize=[5.5, 4.5])
+figure = plt.figure(figsize=[8.5, 7.5])
     
 for k in range(50):
     tl1=0.8*tl;
@@ -291,8 +291,9 @@ for k in range(50):
     ls = LightSource(azdeg=-130, altdeg=15)
     ax.view_init(elev=15,azim=-130)
     rgb = ls.shade(decision_val, plt.cm.RdYlBu)
-    ax.plot_surface(X_plot,Y_plot,decision_val,rstride=1, cstride=1, linewidth=0,
-                           antialiased=False, facecolors=rgb, zorder=0)
+    ax.plot_surface(X_plot,Y_plot,decision_val, facecolors=rgb, zorder=0)
+    # ax.plot_surface(X_plot,Y_plot,decision_val,rstride=1, cstride=1, linewidth=0,
+                            # antialiased=False, facecolors=rgb, zorder=0)
     plt.plot(x[s==1],y[s==1],'bo',fillstyle="none",markersize=15,markeredgewidth=2,zorder=100)
     plt.plot(x[s==-1],y[s==-1],'ro',fillstyle="none",markersize=15,markeredgewidth=2,zorder=100)
     plt.axis([xmin, xmax, ymin, ymax])
