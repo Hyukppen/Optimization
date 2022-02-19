@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LightSource
 import time
 # %% SVM - Primal-Dual IPM
-plt.close('all')
+plt.close('all') 
 
 Nh=20; Ns=0; N=Nh+Ns
 r1=np.random.randn(int(Nh/2),1); r2=np.random.randn(int(Nh/2),1)+5
@@ -14,6 +14,7 @@ y=np.vstack((r2,r1))
 s=np.vstack((s1,s2))
 xmin= -3; xmax= 8; ymin= -3; ymax = 8
 # case 2
+# Nh=20; Ns=2; N=Nh+Ns
 # x=np.vstack((r1,r2, 3, 2))
 # y=np.vstack((r2,r1, 2, 2))
 # s=np.vstack((s1,s2, 1, -1))
@@ -77,6 +78,7 @@ for k in range(50):
 print(g)
 
 # %% Soft margin SVM - Primal-Dual IPM
+plt.close('all')
 Nh=20; Ns=2; N=Nh+Ns
 r1=np.random.randn(int(Nh/2),1); r2=np.random.randn(int(Nh/2),1)+5
 s1=np.ones((int(Nh/2),1)); s2=-1*np.ones((int(Nh/2),1))
@@ -86,7 +88,7 @@ y=np.vstack((r2,r1, 2, 2))
 s=np.vstack((s1,s2, 1, -1))
 xmin= -3; xmax= 8; ymin= -3; ymax = 8
 
-eps_ini=np.vstack( [1*np.ones((Nh,1)), 100*np.ones((Ns,1))] )
+eps_ini=np.vstack( [1*np.ones((Nh,1)), 10*np.ones((Ns,1))] )
 mu_ini=1*np.ones((2*N,1))
 wk=np.vstack((-1,1,0,eps_ini,mu_ini))
 
@@ -132,7 +134,7 @@ for k in range(50):
     
     wk=wk1
     tl=tl1
-
+    
     plt.cla()
     
     plt.plot(x[s==1],y[s==1],'bo',fillstyle="none",markersize=15,markeredgewidth=2)
@@ -152,6 +154,7 @@ print(alph)
 beta=mu[N:]
 print(beta)
 # %% SVM_kernel trick - Dual problem using Primal-Dual IPM
+plt.close('all')
 ########### functions ###########
 def kernel(x,y,which_kernel,sig):
     if which_kernel=='Linear':
@@ -202,14 +205,14 @@ xmin= -3; xmax= 8; ymin= -3; ymax = 8
 
 alpha_ini=1*np.ones((N,1))
 beta_ini=1*np.ones((N,1))
-mu_ini=10*np.ones((2*N,1))
+mu_ini=1*np.ones((2*N,1))
 lam_ini=0*np.ones((N+1,1))
 wk=np.vstack([alpha_ini , beta_ini , mu_ini , lam_ini])
 
-gamma=2 # 0.1; # 1; #
-sig=1 # 0.5; # 
+gamma= 2 # 10 #  0.1 #  1 # 
+sig= 1 # 2 # 0.5 # 
 tl=1
-which_kernel= 'RBF' # 'Linear' # 'poly' # 'sigmoid' #
+which_kernel= 'RBF' # 'Linear' #  'poly' # 'sigmoid' #
 
 figure = plt.figure(figsize=[8.5, 7.5])
 plt.plot(x[s==1],y[s==1],'bo',fillstyle="none",markersize=15,markeredgewidth=2)
